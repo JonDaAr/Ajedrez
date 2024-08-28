@@ -1,11 +1,26 @@
-.board{
-    display: grid;
-    grid-template-columns: repeat(8,4rem);
-    grid-template-rows: repeat(8,4rem);
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+#root{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Board{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .board .white{
-    background-color: hsl(30, 50%, 60%);
+    background-color: rgb(204, 153, 102);
 }
 .board .dark{
-    background-color: hsl(30, 50%, 30%);
+    background-color: rgb(115, 77, 38);
+}
+.tablero div {
+    border: 1px solid #000;
 }
