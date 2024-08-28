@@ -1,0 +1,11 @@
+.board{
+    display: grid;
+    grid-template-columns: repeat(8,4rem);
+    grid-template-rows: repeat(8,4rem);
+}
+.board .white{
+    background-color: hsl(30, 50%, 60%);
+}
+.board .dark{
+    background-color: hsl(30, 50%, 30%);
+}
