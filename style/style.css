@@ -8,18 +8,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #d3d3d3;
 }
 
 .Board{
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #333;
 }
-.board .white{
-    background-color: rgb(204, 153, 102);
+.Board .white{
+    background-color: rgb(0, 0, 0);
 }
-.board .dark{
-    background-color: rgb(115, 77, 38);
+.Board .dark{
+    background-color: rgb(255, 255, 255);
 }
 .tablero div {
     border: 1px solid #000;
