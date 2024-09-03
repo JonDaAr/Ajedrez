@@ -63,7 +63,7 @@ class Board {
                         const imgElement = d.createElement('img');
                         imgElement.src = piece.piece.image;
                         imgElement.style.width = '100%';
-                        imgElement.style.height = '100%';
+                        imgElement.style.height = '80%';
                         callElement.appendChild(imgElement);
                     }
                 tablero.appendChild(callElement);
@@ -150,3 +150,20 @@ game.addPiece(whitepawn1,1,7);
 
 console.log(root);
 game.createBoard(root);
+
+//funcion que cambia las piece
+function changePieceStyle(style){
+    game.pieces.forEach(piece => {
+        piece.piece.image = `/assets/pieces-${style}/${piece.piece.type}_${piece.piece.color}.svg`;
+    });
+    root.innerHTML = '';
+    game.createBoard(root)
+}
+
+const piecesSelectStyle = document.getElementById('pieceStyle');
+piecesSelectStyle.addEventListener('change' , (e) => {
+    const selectStyle = e.target.value;
+    changePieceStyle(selectStyle);
+});
+
+

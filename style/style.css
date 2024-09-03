@@ -4,25 +4,28 @@
     box-sizing: border-box;
 }
 #root{
-    height: 100vh;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #d3d3d3;
+    border: 1rem solid #ffffff;
 }
 
-.Board{
+main{
+    background-color: #d3d3d3;
     display: flex;
+    width: 100vw;
+    height: 100vh;
     justify-content: center;
-    align-items: center;
-    background-color: #333;
-}
-.Board .white{
-    background-color: rgb(0, 0, 0);
-}
-.Board .dark{
-    background-color: rgb(255, 255, 255);
+
 }
 .tablero div {
     border: 1px solid #000;
+}
+
+#pieceStyle{
+    height: 1.2rem;
+    position: relative;
+    top: 2rem;
+    margin: 0 1rem;
 }
