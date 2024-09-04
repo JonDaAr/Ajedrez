@@ -4,10 +4,85 @@ const root = d.getElementById('root');
 const checkCoord = (row, col) => (row % 2 === 0 && col % 2 === 0) || (row % 2 === 1 && col % 2 === 1);
 
 class Piece {
-    constructor(type, color){
+    constructor(type, color,row,col){
         this.type = type;
         this.color = color;
+        this.row = row;
+        this.col = col;
         this.image = `/assets/pieces-style1/${type}_${color}.svg`;
+    }
+
+    move(row,col){
+        this.row = row;
+        this.col = col;
+    }
+
+    isValidMovement(targetRow, targetCol){
+        throw new error()
+    }
+}
+
+class Pawn extends Piece{
+    constructor(color,row,col){
+        super('pawn',color,row,col);
+    }
+
+    isValidMovement(targetRow, targetCol){
+        //como moverlo :_
+        return this.row === targetRow || this.col === targetCol;
+    }
+}
+
+class Rook extends Piece{
+    constructor(color,row,col){
+        super('rook',color,row,col);
+    }
+
+    isValidMovement(targetRow, targetCol){
+        //como moverlo :_
+        return this.row === targetRow || this.col === targetCol;
+    }
+}
+
+class knight extends Piece{
+    constructor(color,row,col){
+        super('knight',color,row,col);
+    }
+
+    isValidMovement(targetRow, targetCol){
+        //como moverlo :_
+        return this.row === targetRow || this.col === targetCol;
+    }
+}
+
+class Queen extends Piece{
+    constructor(color,row,col){
+        super('queen',color,row,col);
+    }
+
+    isValidMovement(targetRow, targetCol){
+        //como moverlo :_
+        return this.row === targetRow || this.col === targetCol;
+    }
+}
+class King extends Piece{
+    constructor(color,row,col){
+        super('king',color,row,col);
+    }
+
+    isValidMovement(targetRow, targetCol){
+        //como moverlo :_
+        return this.row === targetRow || this.col === targetCol;
+    }
+}
+class Bishop extends Piece{
+    constructor(color,row,col){
+        super('bishop',color,row,col);
+    }
+
+    isValidMovement(targetRow, targetCol){
+        //como moverlo :_
+        return this.row === targetRow || this.col === targetCol;
     }
 }
 
@@ -33,9 +108,22 @@ class Board {
         }
     }
     // agrego una pieza al tablero
-    addPiece(piece, row, col){
-        this.pieces.push({piece, row, col});
+    addPiece(piece){
+        this.pieces.push(piece);
     }
+
+// Metodo para mover piezas
+movePiece(piece, targetRow,targetCol){
+    if(piece.isValidMovement(targetRow,targetCol)){
+        piece.move(targetRow,targetCol);
+    }else {
+        console.log("Movimiento invalido");
+    }
+}
+
+
+
+
 // creacion del atablero y sus piezas //
 // parte visual//
     createBoard(element){
@@ -47,26 +135,26 @@ class Board {
         
         this.board.forEach((row,i) => {
             row.forEach((cell, j) => {
-                const callElement = d.createElement('div');
-                callElement.style.display = 'flex';
-                callElement.style.alignItems = 'center';
-                callElement.style.width = '70px';
-                callElement.style.height = '70px';
+                const cellElement = d.createElement('div');
+                cellElement.style.display = 'flex';
+                cellElement.style.alignItems = 'center';
+                cellElement.style.width = '74px';
+                cellElement.style.height = '74px';
                 if(cell === "dark") {
-                    callElement.style.backgroundColor = '#a5682a';
+                    cellElement.style.backgroundColor = '#a5682a';
                 } else{
-                    callElement.style.backgroundColor = '#F8DE7E';
+                    cellElement.style.backgroundColor = '#F8DE7E';
                 }
 
                 const piece = this.pieces.find(p => p.row === i && p.col === j);
                     if (piece) {
                         const imgElement = d.createElement('img');
-                        imgElement.src = piece.piece.image;
+                        imgElement.src = piece.image;
                         imgElement.style.width = '100%';
                         imgElement.style.height = '80%';
-                        callElement.appendChild(imgElement);
+                        cellElement.appendChild(imgElement);
                     }
-                tablero.appendChild(callElement);
+                tablero.appendChild(cellElement);
             });
         });
 
@@ -76,22 +164,22 @@ class Board {
 
 // creo la pieza //
 // averiguar otro metodo este ocupa muchas lineas //
-const whiterook1 = new Piece('rook', 'white');
-const whiterook2 = new Piece('rook', 'white');
-const whiteknight1 = new Piece ('knight', 'white');
-const whiteknight2 = new Piece ('knight', 'white');
-const whitebishop1 = new Piece ('bishop', 'white');
-const whitebishop2= new Piece ('bishop', 'white');
-const whiteking = new Piece('king','white');
-const whitequeen = new Piece('queen','white');
-const whitepawn1 = new Piece('Pawn','white');
-const whitepawn2 = new Piece('Pawn','white');
-const whitepawn3 = new Piece('Pawn','white');
-const whitepawn4 = new Piece('Pawn','white');
-const whitepawn5 = new Piece('Pawn','white');
-const whitepawn6 = new Piece('Pawn','white');
-const whitepawn7 = new Piece('Pawn','white');
-const whitepawn8 = new Piece('Pawn','white');
+const whiterook1 = new Rook('white',7,0);
+const whiterook2 = new Rook('white',7,7);
+const whiteknight1 = new knight ('white',7,1);
+const whiteknight2 = new knight ('white',7,6);
+const whitebishop1 = new Bishop ('white',7,2);
+const whitebishop2 = new Bishop ('white',7,5);
+const whiteking = new King('white',7,3);
+const whitequeen = new Piece('white',7,4);
+const whitepawn1 = new Pawn('white',6,1);
+const whitepawn2 = new Pawn('white',6,2);
+const whitepawn3 = new Pawn('white',6,3);
+const whitepawn4 = new Pawn('white',6,4);
+const whitepawn5 = new Pawn('white',6,5);
+const whitepawn6 = new Pawn('white',6,6);
+const whitepawn7 = new Pawn('white',6,7);
+const whitepawn8 = new Pawn('white',6,0);
 
 const blackrook1 = new Piece('rook', 'black');
 const blackrook2 = new Piece('rook', 'black');
@@ -101,7 +189,7 @@ const blackbishop1 = new Piece ('bishop', 'black');
 const blackbishop2= new Piece ('bishop', 'black');
 const blackking = new Piece('king','black');
 const blackqueen = new Piece('queen','black');
-const blackpawn1 = new Piece('Pawn','black');
+const blackpawn1 = new Piece('pawn','black');
 const blackpawn2 = new Piece('Pawn','black');
 const blackpawn3 = new Piece('Pawn','black');
 const blackpawn4 = new Piece('Pawn','black');
@@ -113,40 +201,23 @@ const blackpawn8 = new Piece('Pawn','black');
 
 const game = new Board(8, 8);
 game.getBoard();
-// agrega una pieza en el tablero
-game.addPiece(blackrook1,7,0);
-game.addPiece(blackrook1,7,7);
-game.addPiece(blackknight1,7,1);
-game.addPiece(blackknight2,7,6);
-game.addPiece(blackbishop1,7,2);
-game.addPiece(blackbishop1,7,5);
-game.addPiece(blackking,7,3);
-game.addPiece(blackqueen,7,4);
-game.addPiece(blackpawn1,6,0);
-game.addPiece(blackpawn1,6,1);
-game.addPiece(blackpawn1,6,2);
-game.addPiece(blackpawn1,6,3);
-game.addPiece(blackpawn1,6,4);
-game.addPiece(blackpawn1,6,5);
-game.addPiece(blackpawn1,6,6);
-game.addPiece(blackpawn1,6,7);
 
-game.addPiece(whiterook1,0,0);
-game.addPiece(whiterook1,0,7);
-game.addPiece(whiteknight1,0,1);
-game.addPiece(whiteknight2,0,6);
-game.addPiece(whitebishop1,0,2);
-game.addPiece(whitebishop1,0,5);
-game.addPiece(whiteking,0,3);
-game.addPiece(whitequeen,0,4);
-game.addPiece(whitepawn1,1,0);
-game.addPiece(whitepawn1,1,1);
-game.addPiece(whitepawn1,1,2);
-game.addPiece(whitepawn1,1,3);
-game.addPiece(whitepawn1,1,4);
-game.addPiece(whitepawn1,1,5);
-game.addPiece(whitepawn1,1,6);
-game.addPiece(whitepawn1,1,7);
+game.addPiece(whitepawn1);
+game.addPiece(whitepawn2);
+game.addPiece(whitepawn3);
+game.addPiece(whitepawn4);
+game.addPiece(whitepawn5);
+game.addPiece(whitepawn6);
+game.addPiece(whitepawn7);
+game.addPiece(whitepawn8);
+game.addPiece(whitebishop1);
+game.addPiece(whitebishop2);
+game.addPiece(whiteknight1);
+game.addPiece(whiteknight2);
+game.addPiece(whiterook1);
+game.addPiece(whiterook2);
+game.addPiece(whiteking);
+game.addPiece(whitequeen);
 
 console.log(root);
 game.createBoard(root);
