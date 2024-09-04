@@ -1,5 +1,6 @@
 const d = document;
 const root = d.getElementById('root');
+let selectedPiece = null;
 
 const checkCoord = (row, col) => (row % 2 === 0 && col % 2 === 0) || (row % 2 === 1 && col % 2 === 1);
 
@@ -18,7 +19,7 @@ class Piece {
     }
 
     isValidMovement(targetRow, targetCol){
-        throw new error()
+        throw new Error("isValidMovement debe ser implementado por la subclase");
     }
 }
 
@@ -29,7 +30,8 @@ class Pawn extends Piece{
 
     isValidMovement(targetRow, targetCol){
         //como moverlo :_
-        return this.row === targetRow || this.col === targetCol;
+        const direction = this.color === 'white' ? -1 : 1;
+        return this.row + direction === targetRow || this.col + direction === targetCol;
     }
 }
 
@@ -44,7 +46,7 @@ class Rook extends Piece{
     }
 }
 
-class knight extends Piece{
+class Knight extends Piece{
     constructor(color,row,col){
         super('knight',color,row,col);
     }
@@ -98,11 +100,7 @@ class Board {
         for (let i = 0; i < this.rows; i++) {
             let row = [];
             for (let j = 0; j < this.cols; j++) {
-                if((i+j)%2 === 0){
-                    checkCoord(i, j) ? row.push("dark") : row.push(null);
-                } else{
-                    checkCoord(i, j) ? row.push("white") : row.push(null);
-                }
+                row.push(null);
             }
             this.board.push(row);
         }
@@ -110,17 +108,25 @@ class Board {
     // agrego una pieza al tablero
     addPiece(piece){
         this.pieces.push(piece);
+        this.board[piece.row][piece.col] = piece;
     }
 
 // Metodo para mover piezas
 movePiece(piece, targetRow,targetCol){
     if(piece.isValidMovement(targetRow,targetCol)){
+        this.board[piece.row][piece.col] = null;
         piece.move(targetRow,targetCol);
+        this.board[targetRow][targetCol] = piece;
+        this.updateBoard();
     }else {
         console.log("Movimiento invalido");
     }
 }
 
+updateBoard(){
+    root.innerHTML = '';
+    this.createBoard(root);
+}
 
 
 
@@ -140,16 +146,20 @@ movePiece(piece, targetRow,targetCol){
                 cellElement.style.alignItems = 'center';
                 cellElement.style.width = '74px';
                 cellElement.style.height = '74px';
-                if(cell === "dark") {
-                    cellElement.style.backgroundColor = '#a5682a';
-                } else{
-                    cellElement.style.backgroundColor = '#F8DE7E';
-                }
+                cellElement.style.backgroundColor = (i + j) % 2 === 0 ? '#a5682a' : '#F8DE7E';
+                
+                cellElement.addEventListener('click', () => {
+                    if (selectedPiece) {
+                        this.movePiece(selectedPiece, i, j);
+                        selectedPiece = null;
+                    } else if (this.board[i][j]) {
+                        selectedPiece = this.board[i][j];
+                    }
+                });
 
-                const piece = this.pieces.find(p => p.row === i && p.col === j);
-                    if (piece) {
+                    if (cell) {
                         const imgElement = d.createElement('img');
-                        imgElement.src = piece.image;
+                        imgElement.src = cell.image;
                         imgElement.style.width = '100%';
                         imgElement.style.height = '80%';
                         cellElement.appendChild(imgElement);
@@ -164,60 +174,32 @@ movePiece(piece, targetRow,targetCol){
 
 // creo la pieza //
 // averiguar otro metodo este ocupa muchas lineas //
-const whiterook1 = new Rook('white',7,0);
-const whiterook2 = new Rook('white',7,7);
-const whiteknight1 = new knight ('white',7,1);
-const whiteknight2 = new knight ('white',7,6);
-const whitebishop1 = new Bishop ('white',7,2);
-const whitebishop2 = new Bishop ('white',7,5);
-const whiteking = new King('white',7,3);
-const whitequeen = new Piece('white',7,4);
-const whitepawn1 = new Pawn('white',6,1);
-const whitepawn2 = new Pawn('white',6,2);
-const whitepawn3 = new Pawn('white',6,3);
-const whitepawn4 = new Pawn('white',6,4);
-const whitepawn5 = new Pawn('white',6,5);
-const whitepawn6 = new Pawn('white',6,6);
-const whitepawn7 = new Pawn('white',6,7);
-const whitepawn8 = new Pawn('white',6,0);
-
-const blackrook1 = new Piece('rook', 'black');
-const blackrook2 = new Piece('rook', 'black');
-const blackknight1 = new Piece ('knight', 'black');
-const blackknight2 = new Piece ('knight', 'black');
-const blackbishop1 = new Piece ('bishop', 'black');
-const blackbishop2= new Piece ('bishop', 'black');
-const blackking = new Piece('king','black');
-const blackqueen = new Piece('queen','black');
-const blackpawn1 = new Piece('pawn','black');
-const blackpawn2 = new Piece('Pawn','black');
-const blackpawn3 = new Piece('Pawn','black');
-const blackpawn4 = new Piece('Pawn','black');
-const blackpawn5 = new Piece('Pawn','black');
-const blackpawn6 = new Piece('Pawn','black');
-const blackpawn7 = new Piece('Pawn','black');
-const blackpawn8 = new Piece('Pawn','black');
+const createPieces = () => {
+    const pieces = [
+        new Rook('white', 7, 0), new Rook('white', 7, 7),
+        new Knight('white', 7, 1), new Knight('white', 7, 6),
+        new Bishop('white', 7, 2), new Bishop('white', 7, 5),
+        new King('white', 7, 4), new Queen('white', 7, 3),
+        new Pawn('white', 6, 0), new Pawn('white', 6, 1),
+        new Pawn('white', 6, 2), new Pawn('white', 6, 3),
+        new Pawn('white', 6, 4), new Pawn('white', 6, 5),
+        new Pawn('white', 6, 6), new Pawn('white', 6, 7),
+        new Rook('black', 0, 0), new Rook('black', 0, 7),
+        new Knight('black', 0, 1), new Knight('black', 0, 6),
+        new Bishop('black', 0, 2), new Bishop('black', 0, 5),
+        new King('black', 0, 4), new Queen('black', 0, 3),
+        new Pawn('black', 1, 0), new Pawn('black', 1, 1),
+        new Pawn('black', 1, 2), new Pawn('black', 1, 3),
+        new Pawn('black', 1, 4), new Pawn('black', 1, 5),
+        new Pawn('black', 1, 6), new Pawn('black', 1, 7)
+    ];
+    pieces.forEach(piece => game.addPiece(piece));
+};
 
 
 const game = new Board(8, 8);
 game.getBoard();
-
-game.addPiece(whitepawn1);
-game.addPiece(whitepawn2);
-game.addPiece(whitepawn3);
-game.addPiece(whitepawn4);
-game.addPiece(whitepawn5);
-game.addPiece(whitepawn6);
-game.addPiece(whitepawn7);
-game.addPiece(whitepawn8);
-game.addPiece(whitebishop1);
-game.addPiece(whitebishop2);
-game.addPiece(whiteknight1);
-game.addPiece(whiteknight2);
-game.addPiece(whiterook1);
-game.addPiece(whiterook2);
-game.addPiece(whiteking);
-game.addPiece(whitequeen);
+createPieces();
 
 console.log(root);
 game.createBoard(root);
@@ -225,7 +207,7 @@ game.createBoard(root);
 //funcion que cambia las piece
 function changePieceStyle(style){
     game.pieces.forEach(piece => {
-        piece.piece.image = `/assets/pieces-${style}/${piece.piece.type}_${piece.piece.color}.svg`;
+        piece.image = `/assets/pieces-${style}/${piece.type}_${piece.color}.svg`;
     });
     root.innerHTML = '';
     game.createBoard(root)
