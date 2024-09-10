@@ -29,7 +29,7 @@ class Pawn extends Piece{
     }
 
     isValidMovement(targetRow, targetCol){
-        //como moverlo :_
+        //como moverlo D:
         const direction = this.color === 'white' ? -1 : 1;
         return this.row + direction === targetRow || this.col + direction === targetCol;
     }
@@ -41,7 +41,7 @@ class Rook extends Piece{
     }
 
     isValidMovement(targetRow, targetCol){
-        //como moverlo :_
+        //como moverlo D:
         return this.row === targetRow || this.col === targetCol;
     }
 }
@@ -52,7 +52,7 @@ class Knight extends Piece{
     }
 
     isValidMovement(targetRow, targetCol){
-        //como moverlo :_
+        //como moverlo D:
         return this.row === targetRow || this.col === targetCol;
     }
 }
@@ -63,7 +63,7 @@ class Queen extends Piece{
     }
 
     isValidMovement(targetRow, targetCol){
-        //como moverlo :_
+        //como moverlo D:
         return this.row === targetRow || this.col === targetCol;
     }
 }
@@ -73,7 +73,7 @@ class King extends Piece{
     }
 
     isValidMovement(targetRow, targetCol){
-        //como moverlo :_
+        //como moverlo D:
         return this.row === targetRow || this.col === targetCol;
     }
 }
@@ -83,7 +83,7 @@ class Bishop extends Piece{
     }
 
     isValidMovement(targetRow, targetCol){
-        //como moverlo :_
+        //como moverlo D:
         return this.row === targetRow || this.col === targetCol;
     }
 }
