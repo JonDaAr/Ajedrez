@@ -31,8 +31,17 @@ class Pawn extends Piece{
     isValidMovement(targetRow, targetCol){
         //como moverlo D:
         const direction = this.color === 'white' ? -1 : 1;
-        return this.row + direction === targetRow || this.col + direction === targetCol;
+        const startRow = this.color === 'white' ? 6 : 1;
+        
+        if (this.col === targetCol) {
+            if (targetRow === this.row + direction) {
+                return true;
     }
+}
+if (this.row === startRow && targetRow === this.row + 2 * direction) {
+    return true;
+} 
+}
 }
 
 class Rook extends Piece{
@@ -173,7 +182,6 @@ updateBoard(){
 }
 
 // creo la pieza //
-// averiguar otro metodo este ocupa muchas lineas //
 const createPieces = () => {
     const pieces = [
         new Rook('white', 7, 0), new Rook('white', 7, 7),
