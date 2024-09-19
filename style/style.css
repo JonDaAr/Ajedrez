@@ -3,24 +3,29 @@
     padding: 0;
     box-sizing: border-box;
 }
+body{
+    width: 100%;
+    height: 100vh;
+    background: #000046;
+    background: linear-gradient(to right, #1CB5E0, #000046);
+}
 #root{
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1rem solid #ffffff;
 }
 
 main{
-    background-color: #d3d3d3;
     display: flex;
     width: 100vw;
     height: 100vh;
     justify-content: center;
 
 }
-.tablero div {
-    border: 1px solid #000;
+.tablero {
+    padding: 10px 10px 0 0 ;
+    background: white;
 }
 
 #pieceStyle{
@@ -29,3 +34,54 @@ main{
     top: 2rem;
     margin: 0 1rem;
 }
+
+.reglasH, .reglasV{
+    padding: 0;
+    font-size: 1.5rem;
+}
+
+#pieceStyle {
+    width: 8rem;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #333;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+  }
+  
+  #pieceStyle:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background-color: #f9f9f9;
+  }
+  
+  #pieceStyle:focus {
+    outline: none;
+    background-color: #eef4ff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+  }
+  
+  #pieceStyle.expanded {
+    transform: scale(1.05);
+  }
+  
+  #pieceStyle.shrinking {
+    transform: scale(1);
+  }
+  :root {
+    --background: linear-gradient(30deg, #f39c12 30%, #f1c40f);
+    --background-select: linear-gradient(to left, #34495e 3rem, #2c3e50 3rem);
+  }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }

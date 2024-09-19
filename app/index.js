@@ -104,7 +104,8 @@ class Board {
         this.board = [];
         this.pieces = [];
     }
-// Creacion del Tablero //
+
+    // Creacion del Tablero
     getBoard() {
         for (let i = 0; i < this.rows; i++) {
             let row = [];
@@ -114,72 +115,113 @@ class Board {
             this.board.push(row);
         }
     }
-    // agrego una pieza al tablero
-    addPiece(piece){
+
+    // agregar una pieza al tablero
+    addPiece(piece) {
         this.pieces.push(piece);
         this.board[piece.row][piece.col] = piece;
     }
 
-// Metodo para mover piezas
-movePiece(piece, targetRow,targetCol){
-    if(piece.isValidMovement(targetRow,targetCol)){
-        this.board[piece.row][piece.col] = null;
-        piece.move(targetRow,targetCol);
-        this.board[targetRow][targetCol] = piece;
-        this.updateBoard();
-    }else {
-        console.log("Movimiento invalido");
+    // Metodo para mover piezas
+    movePiece(piece, targetRow, targetCol) {
+        if (piece.isValidMovement(targetRow, targetCol)) {
+            this.board[piece.row][piece.col] = null;
+            piece.move(targetRow, targetCol);
+            this.board[targetRow][targetCol] = piece;
+            this.updateBoard();
+        } else {
+            console.log("Movimiento inválido");
+        }
     }
-}
 
-updateBoard(){
-    root.innerHTML = '';
-    this.createBoard(root);
-}
+    updateBoard() {
+        root.innerHTML = '';
+        this.createBoard(root);
+    }
 
-
-
-// creacion del atablero y sus piezas //
-// parte visual//
-    createBoard(element){
+    // parte visual con letras y números
+    createBoard(element) {
         const tablero = d.createElement('div');
         tablero.setAttribute("class", "tablero");
         tablero.style.display = 'grid';
-        tablero.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
-        tablero.style.gridTemplateRows = `repeat(${this.rows}, 1fr)`;
+        tablero.style.gridTemplateColumns = `repeat(${this.cols + 1}, 1fr)`;
+        tablero.style.gridTemplateRows = `repeat(${this.rows + 1}, 1fr)`;
+    
         
-        this.board.forEach((row,i) => {
+        const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+        
+    
+        this.board.forEach((row, i) => {
+            // Número en el borde izquierdo
+            const numberElementLeft = d.createElement('div');
+            numberElementLeft.className += "reglasV ";
+            numberElementLeft.innerText = 8 - i; 
+            numberElementLeft.style.background = 'white';
+            numberElementLeft.style.display = 'flex';
+            numberElementLeft.style.justifyContent = 'center';
+            numberElementLeft.style.alignItems = 'center';
+            numberElementLeft.style.width = '60px'; 
+            numberElementLeft.style.height = '60px';
+            tablero.appendChild(numberElementLeft);
+    
+            // Crear las celdas del tablero
             row.forEach((cell, j) => {
                 const cellElement = d.createElement('div');
                 cellElement.style.display = 'flex';
                 cellElement.style.alignItems = 'center';
-                cellElement.style.width = '74px';
-                cellElement.style.height = '74px';
+                cellElement.style.width = '60px';
+                cellElement.style.height = '60px';
                 cellElement.style.backgroundColor = (i + j) % 2 === 0 ? '#a5682a' : '#F8DE7E';
-                
-                cellElement.addEventListener('click', () => {
-                    if (selectedPiece) {
-                        this.movePiece(selectedPiece, i, j);
-                        selectedPiece = null;
-                    } else if (this.board[i][j]) {
-                        selectedPiece = this.board[i][j];
-                    }
-                });
-
-                    if (cell) {
-                        const imgElement = d.createElement('img');
-                        imgElement.src = cell.image;
-                        imgElement.style.width = '100%';
-                        imgElement.style.height = '80%';
-                        cellElement.appendChild(imgElement);
-                    }
+                console.log(j)
+                if (cell) {
+                    const imgElement = d.createElement('img');
+                    imgElement.src = cell.image;
+                    imgElement.style.width = '100%';
+                    imgElement.style.height = '80%';
+                    cellElement.appendChild(imgElement);
+                }
+                cellElement.addEventListener('click', () => this.handleCellClick(i, j));
                 tablero.appendChild(cellElement);
+                
             });
+
+        });
+    
+        // Letras en la parte inferior
+
+        const cubeElement = d.createElement('div')
+        cubeElement.style.background = 'white';
+        tablero.appendChild(cubeElement);
+        letters.forEach(letter => {
+            const letterElement = d.createElement('div');
+            letterElement.className += "reglasH ";
+            letterElement.innerText = letter;
+            letterElement.style.background = 'white';
+            letterElement.style.display = 'flex';
+            letterElement.style.justifyContent = 'center';
+            letterElement.style.alignItems = 'center';
+            letterElement.style.height = '60px';
+            tablero.appendChild(letterElement);
         });
 
         element.appendChild(tablero);
     }
+    handleCellClick(row, col) {
+        const clickedPiece = this.board[row][col];
+        
+        if (selectedPiece) {
+            // Si ya hay una pieza seleccionada, intenta moverla
+            this.movePiece(selectedPiece, row, col);
+            selectedPiece = null;
+        } else if (clickedPiece) {
+            // Si no hay una pieza seleccionada, selecciona la pieza clicada
+            selectedPiece = clickedPiece;
+            console.log(`Seleccionaste la pieza: ${clickedPiece.type} en la posición (${clickedPiece.row}, ${clickedPiece.col})`);
+        }
+    }
+    
 }
+
 
 // creo la pieza //
 const createPieces = () => {
@@ -227,4 +269,16 @@ piecesSelectStyle.addEventListener('change' , (e) => {
     changePieceStyle(selectStyle);
 });
 
+const selectElement = document.getElementById('pieceStyle');
 
+// Agrandar al hacer clic
+selectElement.addEventListener('focus', function () {
+  selectElement.classList.add('expanded');
+  selectElement.classList.remove('shrinking');
+});
+
+// Volver al tamaño normal cuando pierde el foco
+selectElement.addEventListener('blur', function () {
+  selectElement.classList.remove('expanded');
+  selectElement.classList.add('shrinking');
+});
