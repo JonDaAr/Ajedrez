@@ -172,7 +172,6 @@ class Board {
                 cellElement.style.width = '60px';
                 cellElement.style.height = '60px';
                 cellElement.style.backgroundColor = (i + j) % 2 === 0 ? '#a5682a' : '#F8DE7E';
-                console.log(j)
                 if (cell) {
                     const imgElement = d.createElement('img');
                     imgElement.src = cell.image;
@@ -282,3 +281,4 @@ selectElement.addEventListener('blur', function () {
   selectElement.classList.remove('expanded');
   selectElement.classList.add('shrinking');
 });
+
