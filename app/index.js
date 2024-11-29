@@ -1,6 +1,8 @@
 const d = document;
 const root = d.getElementById('root');
 let selectedPiece = null;
+const moveHistory = [];
+const historyContainer = d.getElementById("move-history");//contenedor del hostorial
 
 const checkCoord = (row, col) => (row % 2 === 0 && col % 2 === 0) || (row % 2 === 1 && col % 2 === 1);
 
@@ -28,20 +30,75 @@ class Pawn extends Piece{
         super('pawn',color,row,col);
     }
 
-    isValidMovement(targetRow, targetCol){
-        //como moverlo D:
+    isValidMovement(targetRow, targetCol) {
         const direction = this.color === 'white' ? -1 : 1;
         const startRow = this.color === 'white' ? 6 : 1;
-        
+    
+        // Movimiento hacia adelante
         if (this.col === targetCol) {
-            if (targetRow === this.row + direction) {
+            if (
+                targetRow === this.row + direction &&
+                !game.board[targetRow][targetCol]
+            ) {
                 return true;
+            }
+            if (
+                this.row === startRow &&
+                targetRow === this.row + 2 * direction &&
+                !game.board[this.row + direction][targetCol] &&
+                !game.board[targetRow][targetCol]
+            ) {
+                return true;
+            }
+        }
+    
+        // Movimiento de captura en diagonal
+        if (
+            Math.abs(this.col - targetCol) === 1 &&
+            targetRow === this.row + direction &&
+            game.board[targetRow][targetCol] &&
+            game.board[targetRow][targetCol].color !== this.color
+        ) {
+            return true;
+        }
+    
+        return false;
     }
+isValidMovement(targetRow, targetCol) {
+    const direction = this.color === 'white' ? -1 : 1;
+    const startRow = this.color === 'white' ? 6 : 1;
+
+    // Movimiento hacia adelante
+    if (this.col === targetCol) {
+        if (
+            targetRow === this.row + direction &&
+            !game.board[targetRow][targetCol]
+        ) {
+            return true;
+        }
+        if (
+            this.row === startRow &&
+            targetRow === this.row + 2 * direction &&
+            !game.board[this.row + direction][targetCol] &&
+            !game.board[targetRow][targetCol]
+        ) {
+            return true;
+        }
+    }
+
+    // Movimiento de captura en diagonal
+    if (
+        Math.abs(this.col - targetCol) === 1 &&
+        targetRow === this.row + direction &&
+        game.board[targetRow][targetCol] &&
+        game.board[targetRow][targetCol].color !== this.color
+    ) {
+        return true;
+    }
+
+    return false;
 }
-if (this.row === startRow && targetRow === this.row + 2 * direction) {
-    return true;
-} 
-}
+    
 }
 
 class Rook extends Piece{
@@ -49,10 +106,30 @@ class Rook extends Piece{
         super('rook',color,row,col);
     }
 
-    isValidMovement(targetRow, targetCol){
-        //como moverlo D:
-        return this.row === targetRow || this.col === targetCol;
+    isValidMovement(targetRow, targetCol) {
+        if (this.row !== targetRow && this.col !== targetCol) {
+            return false; // Debe moverse en línea recta
+        }
+    
+        // Verificar si hay piezas bloqueando el camino
+        const rowStep = targetRow > this.row ? 1 : targetRow < this.row ? -1 : 0;
+        const colStep = targetCol > this.col ? 1 : targetCol < this.col ? -1 : 0;
+    
+        let currentRow = this.row + rowStep;
+        let currentCol = this.col + colStep;
+    
+        while (currentRow !== targetRow || currentCol !== targetCol) {
+            if (game.board[currentRow][currentCol] !== null) {
+                return false; // Hay una pieza bloqueando
+            }
+            currentRow += rowStep;
+            currentCol += colStep;
+        }
+    
+        // Permitir el movimiento si no hay bloqueos
+        return !game.isSameColor(targetRow, targetCol, this.color);
     }
+    
 }
 
 class Knight extends Piece{
@@ -62,7 +139,44 @@ class Knight extends Piece{
 
     isValidMovement(targetRow, targetCol){
         //como moverlo D:
-        return this.row === targetRow || this.col === targetCol;
+        const rowDiff = Math.abs(this.row - targetRow);
+        const colDiff = Math.abs(this.col - targetCol);
+        if ((rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2)) {
+            // Verificar que la casilla final no tenga una pieza aliada
+            return !game.isSameColor(targetRow, targetCol, this.color);
+        }
+        return false;
+    }
+}
+
+class Bishop extends Piece{
+    constructor(color,row,col){
+        super('bishop',color,row,col);
+    }
+
+    isValidMovement(targetRow, targetCol){
+        //como moverlo D:
+        const rowDiff = Math.abs(targetRow - this.row);
+        const colDiff = Math.abs(targetCol - this.col);
+    
+        if (rowDiff === colDiff) {
+            const rowStep = targetRow > this.row ? 1 : targetRow < this.row ? -1 : 0;
+            const colStep = targetCol > this.col ? 1 : targetCol < this.col ? -1 : 0;
+    
+            let currentRow = this.row + rowStep;
+            let currentCol = this.col + colStep;
+    
+            // Verificar todas las casillas intermedias
+            while (currentRow !== targetRow || currentCol !== targetCol) {
+                if (game.board[currentRow][currentCol]) return false;
+                currentRow += rowStep;
+                currentCol += colStep;
+            }
+    
+            // Verificar que la casilla final no tenga una pieza aliada
+            return !game.isSameColor(targetRow, targetCol, this.color);
+        }
+        return false;
     }
 }
 
@@ -73,7 +187,27 @@ class Queen extends Piece{
 
     isValidMovement(targetRow, targetCol){
         //como moverlo D:
-        return this.row === targetRow || this.col === targetCol;
+        const rowDiff = Math.abs(targetRow - this.row);
+        const colDiff = Math.abs(targetCol - this.col);
+
+        if (this.row === targetRow || this.col === targetCol || rowDiff === colDiff) {
+            const rowStep = targetRow > this.row ? 1 : targetRow < this.row ? -1 : 0;
+            const colStep = targetCol > this.col ? 1 : targetCol < this.col ? -1 : 0;
+    
+            let currentRow = this.row + rowStep;
+            let currentCol = this.col + colStep;
+    
+            // Verificar todas las casillas intermedias
+            while (currentRow !== targetRow || currentCol !== targetCol) {
+                if (game.board[currentRow][currentCol]) return false;
+                currentRow += rowStep;
+                currentCol += colStep;
+            }
+    
+            // Verificar que la casilla final no tenga una pieza aliada
+            return !game.isSameColor(targetRow, targetCol, this.color);
+        }
+        return false;
     }
 }
 class King extends Piece{
@@ -83,17 +217,46 @@ class King extends Piece{
 
     isValidMovement(targetRow, targetCol){
         //como moverlo D:
-        return this.row === targetRow || this.col === targetCol;
+        const rowDiff = Math.abs(this.row - targetRow);
+        const colDiff = Math.abs(this.col - targetCol);
+        if ((rowDiff <= 1 && colDiff <= 1) && !(rowDiff === 0 && colDiff === 0)) {
+            return !game.isSameColor(targetRow, targetCol, this.color);
+        }
+        return false;
     }
 }
-class Bishop extends Piece{
-    constructor(color,row,col){
-        super('bishop',color,row,col);
-    }
 
-    isValidMovement(targetRow, targetCol){
-        //como moverlo D:
-        return this.row === targetRow || this.col === targetCol;
+function movePiece(targetRow, targetCol) {
+    const piece = game.selectedPiece;
+
+    if (piece && piece.isValidMovement(targetRow, targetCol)) {
+        const startRow = piece.row;
+        const startCol = piece.col;
+
+        // Mover la pieza
+        game.board[startRow][startCol] = null;
+        game.board[targetRow][targetCol] = piece;
+
+        // Actualizar la posición de la pieza
+        piece.row = targetRow;
+        piece.col = targetCol;
+
+        // Registrar el movimiento
+        moveHistory.push({
+            piece: piece.type,
+            color: piece.color,
+            from: `${startRow},${startCol}`,
+            to: `${targetRow},${targetCol}`,
+        });
+
+        // Mostrar el historial actualizado
+        updateMoveHistory();
+
+        // Deseleccionar la pieza y cambiar el turno
+        game.selectedPiece = null;
+        switchTurn();
+    } else {
+        console.log("Movimiento no válido.");
     }
 }
 
@@ -134,6 +297,55 @@ class Board {
         }
     }
 
+highlightValidMoves(piece) {
+        this.clearHighlight(); // Limpiar los destacados previos
+        for (let row = 0; row < this.rows; row++) {
+            for (let col = 0; col < this.cols; col++) {
+                if (
+                    piece.isValidMovement(row, col) &&
+                    !this.isSameColor(row, col, piece.color)
+                ) {
+                    const cellElement = root.querySelector(
+                        `.cell[data-row="${row}"][data-col="${col}"]`
+                    );
+                    if (cellElement) {
+                        cellElement.classList.add("highlight");
+                    }
+                }
+            }
+        }
+}
+
+    clearHighlight(){
+        const highlightedCells = root.querySelectorAll(".highlight");
+        highlightedCells.forEach(cell => cell.classList.remove("highlight"));
+    }
+
+    handleCellClick(row, col) {
+        const clickedPiece = this.board[row][col];
+    
+        if (selectedPiece) {
+            // Intentar mover la pieza seleccionada
+            if (this.board[row][col] === null || this.board[row][col]?.color !== selectedPiece.color) {
+                this.movePiece(selectedPiece, row, col);
+            }
+            this.clearHighlight(); // Limpiar las casillas destacadas
+            selectedPiece = null; // Deseleccionar la pieza
+        } else if (clickedPiece) {
+            // Seleccionar una nueva pieza
+            selectedPiece = clickedPiece;
+            console.log(
+                `Seleccionaste la pieza: ${clickedPiece.type} en la posición (${clickedPiece.row}, ${clickedPiece.col})`
+            );
+            this.highlightValidMoves(selectedPiece); // Resaltar movimientos válidos
+        }
+    }
+
+    isSameColor(row, col, color) {
+        const piece = this.board[row][col];
+        return piece && piece.color === color;
+    }
+
     updateBoard() {
         root.innerHTML = '';
         this.createBoard(root);
@@ -167,6 +379,9 @@ class Board {
             // Crear las celdas del tablero
             row.forEach((cell, j) => {
                 const cellElement = d.createElement('div');
+                cellElement.className = "cell";
+                cellElement.dataset.row = i;
+                cellElement.dataset.col = j; 
                 cellElement.style.display = 'flex';
                 cellElement.style.alignItems = 'center';
                 cellElement.style.width = '60px';
@@ -205,22 +420,29 @@ class Board {
 
         element.appendChild(tablero);
     }
-    handleCellClick(row, col) {
-        const clickedPiece = this.board[row][col];
-        
-        if (selectedPiece) {
-            // Si ya hay una pieza seleccionada, intenta moverla
-            this.movePiece(selectedPiece, row, col);
-            selectedPiece = null;
-        } else if (clickedPiece) {
-            // Si no hay una pieza seleccionada, selecciona la pieza clicada
-            selectedPiece = clickedPiece;
-            console.log(`Seleccionaste la pieza: ${clickedPiece.type} en la posición (${clickedPiece.row}, ${clickedPiece.col})`);
-        }
-    }
     
 }
+// Historial 
+function updateMoveHistory() {
+    historyContainer.innerHTML = ""; // Limpiar contenido previo
 
+    moveHistory.forEach((move, index) => {
+        const moveEntry = d.createElement("div");
+        moveEntry.className = "move-entry";
+        moveEntry.textContent = `${index + 1}. ${move.color} ${move.piece} de (${move.from}) a (${move.to})`;
+        historyContainer.appendChild(moveEntry);
+    });
+}
+function formatPosition(row, col) {
+    const columns = "abcdefgh";
+    return `${columns[col]}${8 - row}`; // Convertir fila/columna a notación
+}
+
+// Limpiar codigo
+function clearMoveHistory() {
+    moveHistory.length = 0; // Vaciar el array
+    updateMoveHistory();    // Actualizar la interfaz
+}
 
 // creo la pieza //
 const createPieces = () => {

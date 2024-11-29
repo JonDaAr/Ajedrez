@@ -42,12 +42,15 @@ main{
     font-size: 1.5rem;
 }
 
-
+.cell.highlight {
+  outline: 0px solid #204bd8;
+  box-shadow: inset 0 0 10px 5px #3764fabb;
+}
 
 body {
   height: 100%;
   font-size: 16px;
-  background: #1D77EF;
+  background: dodgerblue ;
   display: flex;
   justify-content: center;
   align-items: center;
